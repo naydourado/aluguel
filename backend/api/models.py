@@ -1,0 +1,52 @@
+from django.db import models
+
+# Models é Tabelas
+
+# Lembrando que toda classe começa com letra maiúscula
+# models.Model - deixa a tabela mais flexível
+class Usuario(models.Model):
+
+    # O da direita é o que o usuário vai ver
+    TIPO_CHOICES = [
+        ('LOCADOR', 'Locador'),
+        ('LOCATARIO', 'Locatário')
+    ]
+
+    nome = models.CharField(max_length=100)
+    email = models.EmailField(unique=True, blank=True, null=True)
+    telefone = models.CharField(max_length=20, blank=True)
+    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
+
+    # self - referência do próprio objeto
+    def __str__(self):
+        return self.nome
+    
+class Imovel(models.Model):
+    tipo = models.CharField(max_length=10)
+    tipo = models.CharField(max_length=1-00)
+    valor_aluguel =  models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20)
+
+    locador = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="imoveis")
+
+class Contrato(models.Model):
+    data_inicio = models.DateField()
+    data_fim = models.DateField(null=True, blank=True)
+    valor = models.DecimalField(max_digits=10, decimal_places=2) 
+    # decimal_places - duas casas decimais (até 99 milhões - 10 casas: 99 000 000, 00)
+    # É bom se atentar ao tamanho, considerando a dimensão do banco de dados
+    imovel = models.ForeignKey(Imovel, on_delete=models.CASCADE, related_name='contrato')
+    locador = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='locador')
+    locatario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='locatario')
+
+    def __str__(self):
+        return f"Contrato {self.id}"
+    
+class Pagamento(models.Model):
+    data_pagamento = models.DateField()
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.BooleanField(default=False) # default - valor inicial
+    contrato = models.ForeignKey(Contrato, on_delete=models.CASCADE, related_name='pagamento')
+
+    def __str__(self):
+        return f"Pagamento {self.id}"
