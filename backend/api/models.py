@@ -22,7 +22,7 @@ class Usuario(models.Model):
         return self.nome
     
 class Imovel(models.Model):
-    tipo = models.CharField(max_length=10)
+    tipo = models.CharField(max_length=10) # AQUI ERA TITULO, NÃO TIPO!
     tipo = models.CharField(max_length=1-00)
     valor_aluguel =  models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20)
