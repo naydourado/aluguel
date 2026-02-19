@@ -6,6 +6,9 @@ from .serializers import * # Importa tudo com o *
 from rest_framework.decorators import api_view
 # Um decorator @ é um decorador, o método abaixo dele vai obedece-lo
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated
 
 # Chamando Método com Parâmetro
 @api_view(['GET', 'POST'])
@@ -23,40 +26,213 @@ def listar_usuarios(request):
     else:
         return Response(serializers.data, status=status.HTTP_400_BAD_REQUEST)
 
+#-------------- GENERICS --------------
 # Outra forma de fazer, mas com a classe
+# ListCreateAPIView - tem dois métodos embutidos (GET e POST)
 
 # Usuário
-class UsuarioView(ListCreateAPIView):
-    queryset = Usuario.objects.all()
-    serializer_class = UsuarioSerializer
+# class UsuarioView(ListCreateAPIView):
+#     queryset = Usuario.objects.all()
+#     serializer_class = UsuarioSerializer
 
-class UsuarioDetailView(RetrieveUpdateDestroyAPIView):
-    queryset = Usuario.objects.all()
-    serializer_class = UsuarioSerializer
+# class UsuarioDetailView(RetrieveUpdateDestroyAPIView):
+#     queryset = Usuario.objects.all()
+#     serializer_class = UsuarioSerializer
 
 # Imóvel
-class ImovelView(ListCreateAPIView):
-    queryset = Imovel.objects.all()
-    serializer_class = ImovelSerializer
+# class ImovelView(ListCreateAPIView):
+#     queryset = Imovel.objects.all()
+#     serializer_class = ImovelSerializer
 
-class ImovelDetailView(RetrieveUpdateDestroyAPIView):
-    queryset = Imovel.objects.all()
-    serializer_class = ImovelSerializer
+# class ImovelDetailView(RetrieveUpdateDestroyAPIView):
+#     queryset = Imovel.objects.all()
+#     serializer_class = ImovelSerializer
 
 # Contrato
-class ContratoView(ListCreateAPIView):
-    queryset = Contrato.objects.all()
-    serializer_class = ContratoSerializer
+# class ContratoView(ListCreateAPIView):
+#     queryset = Contrato.objects.all()
+#     serializer_class = ContratoSerializer
 
-class ContratoDetailView(RetrieveUpdateDestroyAPIView):
-    queryset = Contrato.objects.all()
-    serializer_class = ContratoSerializer
+# class ContratoDetailView(RetrieveUpdateDestroyAPIView):
+#     queryset = Contrato.objects.all()
+#     serializer_class = ContratoSerializer
     
 # Pagamento
-class PagamentoView(ListCreateAPIView):
+# class PagamentoView(ListCreateAPIView):
+#     queryset = Pagamento.objects.all()
+#     serializer_class = PagamentoSerializer
+
+# class PagamentoDetailView(RetrieveUpdateDestroyAPIView):
+#     queryset = Pagamento.objects.all()
+#     serializer_class = PagamentoSerializer
+
+
+#-------------- APIView --------------
+# Usuario
+# class UsuarioView(APIView):
+#     def get(self, request): # Aqui o request é obrigatório
+#         usuarios = Usuario.objects.all() # Pega tudo da tabela usuários
+#         serializer = UsuarioSerializer(usuarios, many=True) # Converter a tabela em JSON
+#         return Response(serializer.data)
+    
+#     def post(self, request):
+#         serializer = UsuarioSerializer(data=request.data) # Armazenar a tabela dentro de uma variável, para transformar em JSON e depois salvar em 
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         # Se retornar .data, ele não vai retornar o erro, tem que identificar por olho; com o .errors, ele dá o número do erro
+
+# class UsuarioDetailView(APIView):
+#     def get_object(self, pk):
+#         return Usuario.objects.get(pk=pk)
+    
+#     # Não usou request antes, porque no anterior vai pegar só o número, não dados como um todo
+#     def get(self, request, pk):
+#         usuario = self.get_object(pk)
+#         serializer = UsuarioSerializer(usuario)
+#         return Response(serializer.data)
+    
+#     def put(self, request, pk):
+#         usuario = self.get_object(pk)
+#         serializer = UsuarioSerializer(usuario, data = request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+#     def delete(self, request, pk):
+#         usuario = self.get_object(pk)
+#         usuario.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# # Imoveis
+# class ImovelView(APIView):
+#     def get(self, request): # Aqui o request é obrigatório
+#         imoveis = Imovel.objects.all() # Pega tudo da tabela usuários
+#         serializer = ImovelSerializer(imoveis, many=True) # Converter a tabela em JSON
+#         return Response(serializer.data)
+    
+#     def post(self, request):
+#         serializer = ImovelSerializer(data=request.data) # Armazenar a tabela dentro de uma variável, para transformar em JSON e depois salvar em 
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         # Se retornar .data, ele não vai retornar o erro, tem que identificar por olho; com o .errors, ele dá o número do erro
+
+# class ImovelDetailView(APIView):
+#     def get_object(self, pk):
+#         return Imovel.objects.get(pk=pk)
+    
+#     def get(self, request, pk):
+#         imovel = self.get_object(pk)
+#         serializer = ImovelSerializer(imovel)
+#         return Response(serializer.data)
+    
+#     def put(self, request, pk):
+#         imovel = self.get_object(pk)
+#         serializer = ImovelSerializer(imovel, data = request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+#     def delete(self, request, pk):
+#         imovel = self.get_object(pk)
+#         imovel.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# # Pagamentos
+# class PagamentoView(APIView):
+#     def get(self, request): # Aqui o request é obrigatório
+#         pagamentos = Pagamento.objects.all() # Pega tudo da tabela usuários
+#         serializer = PagamentoSerializer(pagamentos, many=True) # Converter a tabela em JSON
+#         return Response(serializer.data)
+    
+#     def post(self, request):
+#         serializer = PagamentoSerializer(data=request.data) # Armazenar a tabela dentro de uma variável, para transformar em JSON e depois salvar em 
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         # Se retornar .data, ele não vai retornar o erro, tem que identificar por olho; com o .errors, ele dá o número do erro
+        
+# class PagamentoDetailView(APIView):
+#     def get_object(self, pk):
+#         return Pagamento.objects.get(pk=pk)
+    
+#     def get(self, request, pk):
+#         pagamento = self.get_object(pk)
+#         serializer = PagamentoSerializer(pagamento)
+#         return Response(serializer.data)
+    
+#     def put(self, request, pk):
+#         pagamento = self.get_object(pk)
+#         serializer = PagamentoSerializer(pagamento, data = request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+#     def delete(self, request, pk):
+#         pagamento = self.get_object(pk)
+#         pagamento.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+# # Contratos
+# class ContratoView(APIView):
+#     def get(self, request): # Aqui o request é obrigatório
+#         contratos = Contrato.objects.all() # Pega tudo da tabela usuários
+#         serializer = ContratoSerializer(contratos, many=True) # Converter a tabela em JSON
+#         return Response(serializer.data)
+    
+#     def post(self, request):
+#         serializer = ContratoSerializer(data=request.data) # Armazenar a tabela dentro de uma variável, para transformar em JSON e depois salvar em 
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         # Se retornar .data, ele não vai retornar o erro, tem que identificar por olho; com o .errors, ele dá o número do erro
+
+# class ContratoDetailView(APIView):
+#     def get_object(self, pk):
+#         return Contrato.objects.get(pk=pk)
+    
+#     def get(self, request, pk):
+#         contrato = self.get_object(pk)
+#         serializer = ContratoSerializer(contrato)
+#         return Response(serializer.data)
+    
+#     def put(self, request, pk):
+#         contrato = self.get_object(pk)
+#         serializer = ContratoSerializer(contrato, data = request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+#     def delete(self, request, pk):
+#         contrato = self.get_object(pk)
+#         contrato.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
+
+#-------------- ModelsViewSet --------------
+class UsuarioViewSet(ModelViewSet):
+    queryset = Usuario.objects.all()
+    serializer_class = UsuarioSerializer
+    permission_classes = [IsAuthenticated]
+    # Tem que estar autenticado
+
+
+class ImovelViewSet(ModelViewSet):
+    queryset = Imovel.objects.all()
+    serializer_class = ImovelSerializer
+
+class PagamentoViewSet(ModelViewSet):
     queryset = Pagamento.objects.all()
     serializer_class = PagamentoSerializer
 
-class PagamentoDetailView(RetrieveUpdateDestroyAPIView):
-    queryset = Pagamento.objects.all()
-    serializer_class = PagamentoSerializer
+class ContratoViewSet(ModelViewSet):
+    queryset = Contrato.objects.all()
+    serializer_class = ContratoSerializer
