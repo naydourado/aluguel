@@ -9,22 +9,69 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import UsuarioFilter
+
+#-------------- ModelsViewSet --------------
+class UsuarioViewSet(ModelViewSet):
+    queryset = Usuario.objects.all()
+    serializer_class = UsuarioSerializer
+    # permission_classes = [IsAuthenticated]
+    # Tem que estar autenticado
+
+    #---------- Filtro Tipo | Básico ----------
+    # def get_queryset(self):
+    #     tipo = self.request.query_params.get('tipo')
+    #     if tipo:
+    #         self.queryset = self.queryset.filter(tipo=tipo)
+    #     return self.queryset
+
+    #---------- Filtro Tipo | Declarativos ----------
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = UsuarioFilter
+
+class ImovelViewSet(ModelViewSet):
+    queryset = Imovel.objects.all()
+    serializer_class = ImovelSerializer
+
+    #---------- Filtro Status e Tipo | Básico ----------
+    # def get_queryset(self):
+    #     status = self.request.query_params.get('status')
+    #     tipo = self.request.query_params.get('tipo')
+
+    #     if status:
+    #         self.queryset = self.queryset.filter(status=status)
+    #     if tipo:
+    #         self.queryset = self.queryset.filter(tipo=tipo)
+    #     return self.queryset
+
+#---------- Filtro Status e Tipo | Declarativo ----------
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['status', 'tipo']
+
+class PagamentoViewSet(ModelViewSet):
+    queryset = Pagamento.objects.all()
+    serializer_class = PagamentoSerializer
+
+class ContratoViewSet(ModelViewSet):
+    queryset = Contrato.objects.all()
+    serializer_class = ContratoSerializer
 
 # Chamando Método com Parâmetro
-@api_view(['GET', 'POST'])
-def listar_usuarios(request):
-    if request.method == 'GET':
-        # query - procura, set - definir
-        queryset = Usuario.objects.all()
-        serializers = UsuarioSerializer(queryset, many=True) # many - vai ter vários usuários
-        return Response(serializers.data)
-    elif request.method == 'POST':
-        serializers = UsuarioSerializer(data = request.data)
-        if serializers.is_valid():
-            serializers.save()
-            return Response(serializers.data, status=status.HTTP_201_CREATED)
-    else:
-        return Response(serializers.data, status=status.HTTP_400_BAD_REQUEST)
+# @api_view(['GET', 'POST'])
+# def listar_usuarios(request):
+#     if request.method == 'GET':
+#         # query - procura, set - definir
+#         queryset = Usuario.objects.all()
+#         serializers = UsuarioSerializer(queryset, many=True) # many - vai ter vários usuários
+#         return Response(serializers.data)
+#     elif request.method == 'POST':
+#         serializers = UsuarioSerializer(data = request.data)
+#         if serializers.is_valid():
+#             serializers.save()
+#             return Response(serializers.data, status=status.HTTP_201_CREATED)
+#     else:
+#         return Response(serializers.data, status=status.HTTP_400_BAD_REQUEST)
 
 #-------------- GENERICS --------------
 # Outra forma de fazer, mas com a classe
@@ -216,23 +263,3 @@ def listar_usuarios(request):
 #         contrato = self.get_object(pk)
 #         contrato.delete()
 #         return Response(status=status.HTTP_204_NO_CONTENT)
-
-#-------------- ModelsViewSet --------------
-class UsuarioViewSet(ModelViewSet):
-    queryset = Usuario.objects.all()
-    serializer_class = UsuarioSerializer
-    permission_classes = [IsAuthenticated]
-    # Tem que estar autenticado
-
-
-class ImovelViewSet(ModelViewSet):
-    queryset = Imovel.objects.all()
-    serializer_class = ImovelSerializer
-
-class PagamentoViewSet(ModelViewSet):
-    queryset = Pagamento.objects.all()
-    serializer_class = PagamentoSerializer
-
-class ContratoViewSet(ModelViewSet):
-    queryset = Contrato.objects.all()
-    serializer_class = ContratoSerializer

@@ -43,13 +43,23 @@ INSTALLED_APPS = [
     'api',
     'rest_framework',
     "corsheaders",
-    'rest_framework_simplejwt'
+    'rest_framework_simplejwt',
+    'django_filters',
 ]
 
 # Add do JWT
 REST_FRAMEWORK = {
+    # Tipo de Autenticação JWT
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    # Tudo exigirá login
+    # 'DEFAULT_PERMISSION_CLASSES':(
+    #     'rest_framework.permissions.IsAuthenticated'
+    # ),
+    # Filtros
+    'DEFAULT_FILTER_BACKENDS':(
+        'django_filters.rest_framework.DjangoFilterBackend'
     )
 }
 
