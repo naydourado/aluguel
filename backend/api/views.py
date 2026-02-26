@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
-from .filters import UsuarioFilter
+from .filters import *
 
 #-------------- ModelsViewSet --------------
 class UsuarioViewSet(ModelViewSet):
@@ -34,6 +34,9 @@ class ImovelViewSet(ModelViewSet):
     queryset = Imovel.objects.all()
     serializer_class = ImovelSerializer
 
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ImovelFilter
+
     #---------- Filtro Status e Tipo | Básico ----------
     # def get_queryset(self):
     #     status = self.request.query_params.get('status')
@@ -46,16 +49,20 @@ class ImovelViewSet(ModelViewSet):
     #     return self.queryset
 
 #---------- Filtro Status e Tipo | Declarativo ----------
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['status', 'tipo']
 
 class PagamentoViewSet(ModelViewSet):
     queryset = Pagamento.objects.all()
     serializer_class = PagamentoSerializer
 
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = PagamentoFilter
+
 class ContratoViewSet(ModelViewSet):
     queryset = Contrato.objects.all()
     serializer_class = ContratoSerializer
+
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ContratoFilter
 
 # Chamando Método com Parâmetro
 # @api_view(['GET', 'POST'])
