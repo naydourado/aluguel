@@ -1,6 +1,7 @@
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom' 
 import Login from './pages/login'
 import HomeUser from './pages/home_user'
+import Cadastro from './pages/cadastro'
 
 const App = ()=> {
   return (
@@ -8,6 +9,7 @@ const App = ()=> {
       <Routes>
         <Route path='/' element={<Login/>}/>
         <Route path='/login' element={<Login/>}/>
+        <Route path='/cadastro' element={<Cadastro />}/>
         <Route path='/homeuser' element={<HomeUser/>}/>
       </Routes>
     </Router>

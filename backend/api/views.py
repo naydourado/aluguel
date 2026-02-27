@@ -5,10 +5,10 @@ from .models import Usuario, Imovel, Contrato, Pagamento
 from .serializers import * # Importa tudo com o *
 from rest_framework.decorators import api_view
 # Um decorator @ é um decorador, o método abaixo dele vai obedece-lo
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveAPIView
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import *
 
@@ -30,12 +30,28 @@ class UsuarioViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = UsuarioFilter
 
+    def get_queryset(self):
+        qs = super().get_queryse()
+
+        if self.request.user.is_staff:
+            return qs
+        
+        return qs.filter(user=self.queryset.user)
+
 class ImovelViewSet(ModelViewSet):
     queryset = Imovel.objects.all()
     serializer_class = ImovelSerializer
 
     filter_backends = [DjangoFilterBackend]
     filterset_class = ImovelFilter
+
+    def get_queryset(self):
+        qs = super().get_queryse()
+
+        if self.request.user.is_staff:
+            return qs
+        
+        return qs.filter(user=self.queryset.user)
 
     #---------- Filtro Status e Tipo | Básico ----------
     # def get_queryset(self):
@@ -57,12 +73,53 @@ class PagamentoViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = PagamentoFilter
 
+    def get_queryset(self):
+        qs = super().get_queryse()
+
+        if self.request.user.is_staff:
+            return qs
+        
+        return qs.filter(user=self.queryset.user)
+
 class ContratoViewSet(ModelViewSet):
     queryset = Contrato.objects.all()
     serializer_class = ContratoSerializer
 
     filter_backends = [DjangoFilterBackend]
     filterset_class = ContratoFilter
+
+    def get_queryset(self):
+        qs = super().get_queryse()
+
+        if self.request.user.is_staff:
+            return qs
+        
+        return qs.filter(user=self.queryset.user)
+
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({"Usuário criado com sucesso."}, status=status.HTTP_201_CREATED)
+
+class MeView(RetrieveAPIView):
+    serializer_class = UsuarioMeSerializer
+
+    def get_object(self, request):
+        perfil, created = Usuario.objects.get_or_create(
+            user = self.request.user,
+            defaults={
+                'nome': self.request.user.username,
+                'email': self.request.user.email,
+                'tipo': 'USER'
+            }
+        )
+
+        return perfil
 
 # Chamando Método com Parâmetro
 # @api_view(['GET', 'POST'])

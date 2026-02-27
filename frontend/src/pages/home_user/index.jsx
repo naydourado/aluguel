@@ -14,6 +14,7 @@ export default function HomeUser() {
                 headers: {Authorization: `Bearer ${token}`}
                 }
             )
+            setUser(response.data)
             
         } catch (error) {
             console.log("Erro: ", error)

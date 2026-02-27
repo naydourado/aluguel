@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import axios from 'axios' // Tem que usa o fetch
 import './styles.css'
 
@@ -30,7 +31,15 @@ export default function Login() {
             setMessage("Usuário logado")
 
             localStorage.setItem('token', response.data.access)
-            navigate('/homeuser') 
+
+            const me = await axios.get('http://127.0.0.1:8000/api/me/')
+
+            if (me.data.is_staff){
+                navigate('/homeuser') 
+            }else{
+                navigate('/homeuser') 
+            }
+       
 
         } catch (error) {
             console.log("Error: ", error)
@@ -64,8 +73,9 @@ export default function Login() {
                 </div>
 
                 <button className="btn_1" onClick={logar}>Enter</button>
-
             </section>
+
+            <Link to='/cadastro'>Cadastre-se</Link>
         </div>
     )
 }
